@@ -9,13 +9,6 @@ import retrofit2.http.Query;
 
 public interface AllMovieApi {
 
-    @GET("movie/popular")
-    Call<MovieModel> getAllMovies(
-            @Query("api_key") String apiKey,
-            @Query("language") String language,
-            @Query("page") int page
-    );
-
     @GET("trending/all/week")
     Call<AllModel> getTrendingAll(@Query("api_key") String apiKey);
 

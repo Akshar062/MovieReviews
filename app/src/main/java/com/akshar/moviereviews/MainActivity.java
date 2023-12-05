@@ -5,7 +5,10 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 
+import com.akshar.moviereviews.Models.AllModel;
+import com.akshar.moviereviews.adapters.MovieAdapter;
 import com.akshar.moviereviews.adapters.ViewPagerAdapter;
+import com.akshar.moviereviews.fragments.DetailsFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,6 +16,8 @@ public class MainActivity extends AppCompatActivity {
     //Define parameters here
     private ViewPager viewPager;
     private BottomNavigationView bottomNavigationView;
+
+    private MovieAdapter movieAdapter;
 
 
     @Override
@@ -26,6 +31,15 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
+
+        movieAdapter = new MovieAdapter(this, resultList);
+        movieAdapter.setOnItemClickListener(this);
+
+        @Override
+        public void onItemClick(AllModel.Result result) {
+            // Open DetailsFragment and pass the selected result
+            openDetailsFragment(result);
+        }
 
         //Set up the BottomNavigationView here
 
@@ -56,5 +70,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void openDetailsFragment(AllModel.Result result) {
+        // Create a new instance of DetailsFragment and pass the selected result
+        DetailsFragment detailsFragment = DetailsFragment.newInstance(result);
+        // Perform a fragment transaction to replace the current fragment with DetailsFragment
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, detailsFragment);
+        transaction.addToBackStack(null); // Optional: Add to back stack for fragment navigation
+        transaction.commit();
     }
 }
