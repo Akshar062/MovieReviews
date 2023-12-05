@@ -3,7 +3,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class AllMovieModel {
+public class MovieModel {
     private int page;
     private List<Result> results;
     private int totalResults;

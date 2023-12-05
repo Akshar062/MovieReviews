@@ -2,6 +2,7 @@ package com.akshar.moviereviews.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
@@ -10,9 +11,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.akshar.moviereviews.ApiUtils.AllMovieApi;
-import com.akshar.moviereviews.Models.AllMovieModel;
+import com.akshar.moviereviews.Models.AllModel;
+import com.akshar.moviereviews.Models.AllModel;
 import com.akshar.moviereviews.ApiUtils.RetrofitInstance;
 import com.akshar.moviereviews.R;
 import com.akshar.moviereviews.Utils.Constants;
@@ -33,6 +37,8 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView;
     TabLayout tabLayout;
     MovieAdapter movieAdapter;
+    ProgressBar progressBar;
+    TextView textView;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -50,6 +56,10 @@ public class HomeFragment extends Fragment {
         // Initializing the views
         recyclerView = view.findViewById(R.id.rv_home);
         tabLayout = view.findViewById(R.id.tab_layout);
+        progressBar = view.findViewById(R.id.processing_bar);
+        textView = view.findViewById(R.id.errorText);
+
+        progressBar.setVisibility(View.VISIBLE);
 
         // Setting the Tabs
         tabLayout.addTab(tabLayout.newTab().setText("All"));
@@ -65,15 +75,7 @@ public class HomeFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                if ("All".equals(tab.getText())) {
-                    getTrendingAll();
-                } else if ("Movies".equals(tab.getText())) {
-                    getTrendingMovies();
-                } else if ("TV Shows".equals(tab.getText())) {
-                    getTrendingTv();
-                } else if ("Celebrities".equals(tab.getText())) {
-                    getTrendingCelebrities();
-                }
+                getTrendingData(tab.getText().toString());
             }
 
             @Override
@@ -86,36 +88,38 @@ public class HomeFragment extends Fragment {
 
             }
         });
-        getTrendingAll();
-
+        getTrendingData("All");
         // Get data from APi
         return view;
     }
 
-    public void onViewCreated(View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
     }
 
-//    private void getAllMovies() {
-//
-//        Call<AllMovieModel> callAll = allMovieApi.getAllMovies("2322b4f0282ea32cb0faadfbd81a12e1","en-US", 1);
-//        callAll.enqueue(new Callback<AllMovieModel>() {
+//    void getTrendingAll() {
+//        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
+//        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
+//        Call<AllModel> callAll = allMovieApi.getTrendingAll(Constants.api_key);
+//        callAll.enqueue(new Callback<AllModel>() {
 //            @Override
-//            public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
+//            public void onResponse(Call<AllModel> call, Response<AllModel> response) {
 //                Log.d("TAG", "onResponse: status");
 //
 //                if (response.isSuccessful()) {
-//                    AllMovieModel allMovieModel = response.body();
-//
-//                    if (allMovieModel != null) {
-//                        List<AllMovieModel.Result> results = allMovieModel.getResults();
-//
+//                    progressBar.setVisibility(View.GONE);
+//                    AllModel allModel = response.body();
+//                    if (allModel != null) {
+//                        List<AllModel.Result> results = allModel.getResults();
 //                        if (results != null) {
 //                            Log.d("TAG", "Results size: " + results.size());
-//
-//                            movieAdapter = new MovieAdapter(getContext(), results);
-//                            recyclerView.setAdapter(movieAdapter);
+//                            if (movieAdapter == null) {
+//                                movieAdapter = new MovieAdapter(getContext(), results);
+//                                recyclerView.setAdapter(movieAdapter);
+//                            } else {
+//                                movieAdapter.updateData(results);
+//                            }
 //                        } else {
 //                            Log.e("TAG", "Results list is null");
 //                        }
@@ -128,27 +132,172 @@ public class HomeFragment extends Fragment {
 //            }
 //
 //            @Override
-//            public void onFailure(Call<AllMovieModel> call, Throwable t) {
+//            public void onFailure(@NonNull Call<AllModel> call, @NonNull Throwable t) {
+//                textView.setVisibility(View.VISIBLE);
+//                textView.setText(t);
+//                Log.d("TAG", "onFailure: status");
+//            }
+//        });
+//    }
+//
+//    void getTrendingMovies() {
+//        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
+//        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
+//        Call<AllModel> callAll = allMovieApi.getTrendingMovies(Constants.api_key);
+//        callAll.enqueue(new Callback<AllModel>() {
+//            @Override
+//            public void onResponse(Call<AllModel> call, Response<AllModel> response) {
+//                if (response.isSuccessful()) {
+//                    progressBar.setVisibility(View.GONE);
+//                    AllModel movieModel = response.body();
+//                    if (movieModel != null) {
+//                        List<AllModel.Result> results = movieModel.getResults();
+//                        if (results != null) {
+//                            if (movieAdapter == null) {
+//                                movieAdapter = new MovieAdapter(getContext(), results);
+//                                recyclerView.setAdapter(movieAdapter);
+//                            } else {
+//                                movieAdapter.updateData(results);
+//                            }
+//                        } else {
+//                            textView.setVisibility(View.VISIBLE);
+//                            textView.setText("No data found");
+//                        }
+//                    } else {
+//                        textView.setVisibility(View.VISIBLE);
+//                        textView.setText("Empty response");
+//                    }
+//                } else {
+//                    textView.setVisibility(View.VISIBLE);
+//                    textView.setText("Response not successful. Code: " + response.code());
+//                }
+//            }
+//            @Override
+//            public void onFailure(Call<AllModel> call, Throwable t) {
+//                textView.setVisibility(View.VISIBLE);
+//                textView.setText(t);
+//                Log.d("TAG", "onFailure: status");
+//            }
+//        });
+//    }
+//
+//    void getTrendingTv(){
+//        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
+//        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
+//        Call<AllModel> callAll = allMovieApi.getTrendingTv(Constants.api_key);
+//        callAll.enqueue(new Callback<AllModel>() {
+//            @Override
+//            public void onResponse(Call<AllModel> call, Response<AllModel> response) {
+//                Log.d("TAG", "onResponse: status");
+//
+//                if (response.isSuccessful()) {
+//                    AllModel movieModel = response.body();
+//                    if (movieModel != null) {
+//                        List<AllModel.Result> results = movieModel.getResults();
+//                        if (results != null) {
+//                            Log.d("TAG", "Results size: " + results.size());
+//                            if (movieAdapter == null) {
+//                                movieAdapter = new MovieAdapter(getContext(), results);
+//                                recyclerView.setAdapter(movieAdapter);
+//                            } else {
+//                                movieAdapter.updateData(results);
+//                            }
+//                        } else {
+//                            textView.setVisibility(View.VISIBLE);
+//                            textView.setText("No data found");
+//                        }
+//                    } else {
+//                        textView.setVisibility(View.VISIBLE);
+//                        textView.setText("Empty response");
+//                    }
+//                } else {
+//                    textView.setVisibility(View.VISIBLE);
+//                    textView.setText("Response not successful. Code: " + response.code());
+//                }
+//            }
+//            @Override
+//            public void onFailure(Call<AllModel> call, Throwable t) {
+//                textView.setVisibility(View.VISIBLE);
+//                textView.setText(t);
+//                Log.d("TAG", "onFailure: status");
+//            }
+//        });
+//    }
+//
+//    void getTrendingCelebrities(){
+//        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
+//        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
+//        Call<AllModel> callAll = allMovieApi.getTrendingPeople(Constants.api_key);
+//        callAll.enqueue(new Callback<AllModel>() {
+//            @Override
+//            public void onResponse(Call<AllModel> call, Response<AllModel> response) {
+//                Log.d("TAG", "onResponse: status");
+//
+//                if (response.isSuccessful()) {
+//                    AllModel movieModel = response.body();
+//                    if (movieModel != null) {
+//                        List<AllModel.Result> results = movieModel.getResults();
+//                        if (results != null) {
+//                            Log.d("TAG", "Results size: " + results.size());
+//                            if (movieAdapter == null) {
+//                                movieAdapter = new MovieAdapter(getContext(), results);
+//                                recyclerView.setAdapter(movieAdapter);
+//                            } else {
+//                                movieAdapter.updateData(results);
+//                            }
+//                        } else {
+//                            textView.setVisibility(View.VISIBLE);
+//                            textView.setText("No data found");
+//                        }
+//                    } else {
+//                        textView.setVisibility(View.VISIBLE);
+//                        textView.setText("Empty response");
+//                    }
+//                } else {
+//                    textView.setVisibility(View.VISIBLE);
+//                    textView.setText("Response not successful. Code: " + response.code());
+//                }
+//            }
+//            @Override
+//            public void onFailure(Call<AllModel> call, Throwable t) {
+//                textView.setVisibility(View.VISIBLE);
+//                textView.setText(t);
 //                Log.d("TAG", "onFailure: status");
 //            }
 //        });
 //    }
 
-    void getTrendingAll() {
+    void getTrendingData(String category) {
         Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
         AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingAll(Constants.api_key);
-        callAll.enqueue(new Callback<AllMovieModel>() {
-            @Override
-            public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
-                Log.d("TAG", "onResponse: status");
+        Call<AllModel> call;
 
+        switch (category) {
+            case "All":
+                call = allMovieApi.getTrendingAll(Constants.api_key);
+                break;
+            case "Movies":
+                call = allMovieApi.getTrendingMovies(Constants.api_key);
+                break;
+            case "TV Shows":
+                call = allMovieApi.getTrendingTv(Constants.api_key);
+                break;
+            case "Celebrities":
+                call = allMovieApi.getTrendingPeople(Constants.api_key);
+                break;
+            default:
+                return; // or handle default case accordingly
+        }
+
+        call.enqueue(new Callback<AllModel>() {
+            @Override
+            public void onResponse(Call<AllModel> call, Response<AllModel> response) {
                 if (response.isSuccessful()) {
-                    AllMovieModel allMovieModel = response.body();
-                    if (allMovieModel != null) {
-                        List<AllMovieModel.Result> results = allMovieModel.getResults();
+                    progressBar.setVisibility(View.GONE);
+                    AllModel movieModel = response.body();
+                    if (movieModel != null) {
+                        List<AllModel.Result> results = movieModel.getResults();
                         if (results != null) {
-                            Log.d("TAG", "Results size: " + results.size());
                             if (movieAdapter == null) {
                                 movieAdapter = new MovieAdapter(getContext(), results);
                                 recyclerView.setAdapter(movieAdapter);
@@ -156,134 +305,26 @@ public class HomeFragment extends Fragment {
                                 movieAdapter.updateData(results);
                             }
                         } else {
-                            Log.e("TAG", "Results list is null");
+                            textView.setVisibility(View.VISIBLE);
+                            textView.setText("No data found");
                         }
                     } else {
-                        Log.e("TAG", "Response body is null");
+                        textView.setVisibility(View.VISIBLE);
+                        textView.setText("Empty response");
                     }
                 } else {
-                    Log.e("TAG", "Response not successful. Code: " + response.code());
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText("Response not successful. Code: " + response.code());
                 }
             }
 
             @Override
-            public void onFailure(Call<AllMovieModel> call, Throwable t) {
+            public void onFailure(Call<AllModel> call, Throwable t) {
+                textView.setVisibility(View.VISIBLE);
+                textView.setText(t.getMessage());
                 Log.d("TAG", "onFailure: status");
             }
         });
     }
 
-    void getTrendingMovies() {
-        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
-        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingMovies(Constants.api_key);
-        callAll.enqueue(new Callback<AllMovieModel>() {
-            @Override
-            public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
-                Log.d("TAG", "onResponse: status");
-
-                if (response.isSuccessful()) {
-                    AllMovieModel allMovieModel = response.body();
-                    if (allMovieModel != null) {
-                        List<AllMovieModel.Result> results = allMovieModel.getResults();
-                        if (results != null) {
-                            Log.d("TAG", "Results size: " + results.size());
-                            if (movieAdapter == null) {
-                                movieAdapter = new MovieAdapter(getContext(), results);
-                                recyclerView.setAdapter(movieAdapter);
-                            } else {
-                                movieAdapter.updateData(results);
-                            }
-                        } else {
-                            Log.e("TAG", "Results list is null");
-                        }
-                    } else {
-                        Log.e("TAG", "Response body is null");
-                    }
-                } else {
-                    Log.e("TAG", "Response not successful. Code: " + response.code());
-                }
-            }
-            @Override
-            public void onFailure(Call<AllMovieModel> call, Throwable t) {
-                Log.d("TAG", "onFailure: status");
-            }
-        });
-    }
-
-    void getTrendingTv(){
-        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
-        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingTv(Constants.api_key);
-        callAll.enqueue(new Callback<AllMovieModel>() {
-            @Override
-            public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
-                Log.d("TAG", "onResponse: status");
-
-                if (response.isSuccessful()) {
-                    AllMovieModel allMovieModel = response.body();
-                    if (allMovieModel != null) {
-                        List<AllMovieModel.Result> results = allMovieModel.getResults();
-                        if (results != null) {
-                            Log.d("TAG", "Results size: " + results.size());
-                            if (movieAdapter == null) {
-                                movieAdapter = new MovieAdapter(getContext(), results);
-                                recyclerView.setAdapter(movieAdapter);
-                            } else {
-                                movieAdapter.updateData(results);
-                            }
-                        } else {
-                            Log.e("TAG", "Results list is null");
-                        }
-                    } else {
-                        Log.e("TAG", "Response body is null");
-                    }
-                } else {
-                    Log.e("TAG", "Response not successful. Code: " + response.code());
-                }
-            }
-            @Override
-            public void onFailure(Call<AllMovieModel> call, Throwable t) {
-                Log.d("TAG", "onFailure: status");
-            }
-        });
-    }
-
-    void getTrendingCelebrities(){
-        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
-        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingPeople(Constants.api_key);
-        callAll.enqueue(new Callback<AllMovieModel>() {
-            @Override
-            public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
-                Log.d("TAG", "onResponse: status");
-
-                if (response.isSuccessful()) {
-                    AllMovieModel allMovieModel = response.body();
-                    if (allMovieModel != null) {
-                        List<AllMovieModel.Result> results = allMovieModel.getResults();
-                        if (results != null) {
-                            Log.d("TAG", "Results size: " + results.size());
-                            if (movieAdapter == null) {
-                                movieAdapter = new MovieAdapter(getContext(), results);
-                                recyclerView.setAdapter(movieAdapter);
-                            } else {
-                                movieAdapter.updateData(results);
-                            }
-                        } else {
-                            Log.e("TAG", "Results list is null");
-                        }
-                    } else {
-                        Log.e("TAG", "Response body is null");
-                    }
-                } else {
-                    Log.e("TAG", "Response not successful. Code: " + response.code());
-                }
-            }
-            @Override
-            public void onFailure(Call<AllMovieModel> call, Throwable t) {
-                Log.d("TAG", "onFailure: status");
-            }
-        });
-    }
 }
