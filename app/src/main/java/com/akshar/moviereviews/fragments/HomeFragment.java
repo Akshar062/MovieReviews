@@ -15,6 +15,7 @@ import com.akshar.moviereviews.ApiUtils.AllMovieApi;
 import com.akshar.moviereviews.Models.AllMovieModel;
 import com.akshar.moviereviews.ApiUtils.RetrofitInstance;
 import com.akshar.moviereviews.R;
+import com.akshar.moviereviews.Utils.Constants;
 import com.akshar.moviereviews.adapters.MovieAdapter;
 import com.google.android.material.tabs.TabLayout;
 
@@ -136,7 +137,7 @@ public class HomeFragment extends Fragment {
     void getTrendingAll() {
         Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
         AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingAll("2322b4f0282ea32cb0faadfbd81a12e1");
+        Call<AllMovieModel> callAll = allMovieApi.getTrendingAll(Constants.api_key);
         callAll.enqueue(new Callback<AllMovieModel>() {
             @Override
             public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
@@ -175,7 +176,7 @@ public class HomeFragment extends Fragment {
     void getTrendingMovies() {
         Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
         AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingMovies("2322b4f0282ea32cb0faadfbd81a12e1");
+        Call<AllMovieModel> callAll = allMovieApi.getTrendingMovies(Constants.api_key);
         callAll.enqueue(new Callback<AllMovieModel>() {
             @Override
             public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
@@ -213,7 +214,7 @@ public class HomeFragment extends Fragment {
     void getTrendingTv(){
         Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
         AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingTv("2322b4f0282ea32cb0faadfbd81a12e1");
+        Call<AllMovieModel> callAll = allMovieApi.getTrendingTv(Constants.api_key);
         callAll.enqueue(new Callback<AllMovieModel>() {
             @Override
             public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {
@@ -251,7 +252,7 @@ public class HomeFragment extends Fragment {
     void getTrendingCelebrities(){
         Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
         AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
-        Call<AllMovieModel> callAll = allMovieApi.getTrendingPeople("2322b4f0282ea32cb0faadfbd81a12e1");
+        Call<AllMovieModel> callAll = allMovieApi.getTrendingPeople(Constants.api_key);
         callAll.enqueue(new Callback<AllMovieModel>() {
             @Override
             public void onResponse(Call<AllMovieModel> call, Response<AllMovieModel> response) {

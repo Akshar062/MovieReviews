@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.akshar.moviereviews.Models.AllMovieModel;
 import com.akshar.moviereviews.R;
+import com.akshar.moviereviews.Utils.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -51,7 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         // Load movie image using Picasso (or Glide)
         Picasso.get()
-                .load("https://image.tmdb.org/t/p/w500" + result.getPosterPath())// Set your placeholder image
+                .load(Constants.imageUrl + result.getPosterPath())// Set your placeholder image
                 .error(R.drawable.ic_launcher_foreground)              // Set an error image if loading fails
                 .into(holder.movieImage, new Callback() {
                     @Override
