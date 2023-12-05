@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">Movie Reviews</string>
+    <string name="title_bar_text">Movie Reviews</string>
+
+    <!-- Bottom Navigation -->
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+
+    <!-- Movie Details -->
+    <string name="movie_details">Movie Details</string>
+    <string name="movie_details_release_date">Release Date</string>
+    <string name="movie_details_rating">Rating</string>
+    <string name="movie_details_overview">Overview</string>
+    <string name="movie_details_reviews">Reviews</string>
+    <string name="movie_details_no_reviews">No Reviews</string>
+
+
+    <!-- Home Fragment -->
+    <string name="home_fragment_title">Home</string>
+    <string name="home_fragment_subtitle">Latest Reviews</string>
+
+    <!-- Search Fragment -->
+    <string name="search_fragment_title">Search</string>
+    <string name="search_fragment_subtitle">Search for a movie</string>
+
+    <!-- Profile Fragment -->
+    <string name="profile_fragment_title">Profile</string>
+    <string name="profile_fragment_subtitle">Your Profile</string>
+
+    <!-- Settings Fragment -->
+    <string name="settings_fragment_title">Settings</string>
+    <string name="settings_fragment_subtitle">Settings</string>
+
+    <!-- Movie Details Activity -->
+    <string name="movie_details_activity_title">Movie Details</string>
+    <string name="movie_details_activity_subtitle">Movie Details</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>
