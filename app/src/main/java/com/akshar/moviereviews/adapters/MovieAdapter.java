@@ -43,8 +43,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         AllMovieModel.Result result = resultList.get(position);
 
         holder.progressBar.setVisibility(View.VISIBLE);
-
-
+        
         // Set data to views
         holder.movieName.setText(result.getTitle());
         holder.movieRating.setText(String.valueOf(result.getVoteAverage()));
