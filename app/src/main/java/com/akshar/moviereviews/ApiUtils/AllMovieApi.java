@@ -37,7 +37,6 @@ public interface AllMovieApi {
             @Query("page") int page
     );
 
-
     @GET("movie/upcoming")
     Call<AllModel> getUpcomingMovies(
             @Query("api_key") String apiKey,

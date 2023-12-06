@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.akshar.moviereviews.ApiUtils.AllMovieApi;
@@ -36,8 +38,13 @@ public class SearchFragment extends Fragment {
     private RecyclerView nowPlayingRecyclerView, airingTodayRecyclerView ,searchRecyclerView;
     private MovieAdapter nowPlayingAdapter, airingTodayAdapter ,searchAdapter;
 
-    private TextView searchTextView;
+    private TextView searchTextView , pageNumberTextView;
     private TextInputEditText searchEditText;
+
+    private ImageView next, previous;
+    private ConstraintLayout searchLayout;
+
+    private int pageNumber = 1;
 
     public SearchFragment() {
     }
@@ -51,12 +58,20 @@ public class SearchFragment extends Fragment {
         airingTodayRecyclerView = view.findViewById(R.id.rv_airingtoday);
         searchRecyclerView = view.findViewById(R.id.rv_search);
         searchEditText = view.findViewById(R.id.et_search);
-        searchTextView = view.findViewById(R.id.tv_search);
+        searchLayout = view.findViewById(R.id.searchTitlecl);
 
-        searchTextView.setVisibility(View.GONE);
+        next = view.findViewById(R.id.next_page_search);
+        previous = view.findViewById(R.id.previuse_page_search);
+        pageNumberTextView = view.findViewById(R.id.tv_page_no_search);
+
+        searchLayout.setVisibility(View.GONE);
         searchRecyclerView.setVisibility(View.GONE);
 
-
+        if (pageNumber == 1) {
+            previous.setVisibility(View.GONE);
+        } else {
+            previous.setVisibility(View.VISIBLE);
+        }
 
         RecyclerView.LayoutManager layoutManagerPlaying = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         RecyclerView.LayoutManager layoutManagerAiring = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -73,16 +88,41 @@ public class SearchFragment extends Fragment {
         searchEditText.setOnFocusChangeListener((view, b) -> {
             String query = searchEditText.getText().toString();
             if (!b && !query.isEmpty()) {
-                searchTextView.setVisibility(View.VISIBLE);
                 searchRecyclerView.setVisibility(View.VISIBLE);
+                searchLayout.setVisibility(View.VISIBLE);
                 searchData(query);
             } else {
-                searchTextView.setVisibility(View.GONE);
                 searchRecyclerView.setVisibility(View.GONE);
+                searchLayout.setVisibility(View.GONE);
             }
         });
-        getData();
 
+
+        next.setOnClickListener(view -> {
+            pageNumber++;
+            if (pageNumber == 1) {
+                previous.setVisibility(View.GONE);
+            } else {
+                previous.setVisibility(View.VISIBLE);
+            }
+            pageNumberTextView.setText(String.valueOf(pageNumber));
+            searchPage(pageNumber);
+        });
+
+        previous.setOnClickListener(view -> {
+            if (pageNumber > 1) {
+                pageNumber--;
+                if (pageNumber == 1) {
+                    previous.setVisibility(View.GONE);
+                } else {
+                    previous.setVisibility(View.VISIBLE);
+                }
+                pageNumberTextView.setText(String.valueOf(pageNumber));
+                searchPage(pageNumber);
+            }
+        });
+
+        getData();
         return view;
     }
 
@@ -92,6 +132,33 @@ public class SearchFragment extends Fragment {
         AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
         Call<AllModel> call;
         call = allMovieApi.multiSearch(Constants.api_key, query, 1);
+        call.enqueue(new Callback<AllModel>() {
+            @Override
+            public void onResponse(Call<AllModel> call, Response<AllModel> response) {
+                if (response.isSuccessful()) {
+                    AllModel movieModel = response.body();
+                    if (movieModel != null) {
+                        List<AllModel.Result> results = movieModel.getResults();
+                        if (results != null) {
+                            searchAdapter = new MovieAdapter(getContext(), results);
+                            searchRecyclerView.setAdapter(searchAdapter);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AllModel> call, Throwable t) {
+                Log.d("TAG", "onFailure: status");
+            }
+        });
+    }
+
+    void searchPage(int pageNumber){
+        Retrofit retrofit = RetrofitInstance.getRetrofitInstance();
+        AllMovieApi allMovieApi = retrofit.create(AllMovieApi.class);
+        Call<AllModel> call;
+        call = allMovieApi.multiSearch(Constants.api_key, searchEditText.getText().toString(), pageNumber);
         call.enqueue(new Callback<AllModel>() {
             @Override
             public void onResponse(Call<AllModel> call, Response<AllModel> response) {
