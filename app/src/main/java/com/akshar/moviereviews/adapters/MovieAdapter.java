@@ -126,16 +126,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 }
                 bundle.putString("knownForPosterPath", knownForList.get(0).getPosterPath());
                 bundle.putString("knownForType", knownForList.get(0).getMediaType());
-
                 break;
         }
 
         bundle.putString("language", result.getOriginalLanguage());
         bundle.putString("ageLimit", String.valueOf(result.isAdult()));
         bundle.putString("type", result.getMediaType());
-
         detailsFragment.setArguments(bundle);
-
         // Show the fragment
         FragmentTransaction transaction = ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
         detailsFragment.show(transaction, DetailsFragment.TAG);
@@ -186,8 +183,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 });
     }
 
-    public class MovieViewHolder extends RecyclerView.ViewHolder {
-
+    public static class MovieViewHolder extends RecyclerView.ViewHolder {
         CardView cardView;
         ImageView movieImage;
         TextView movieName, movieRating, movieReleaseDate;
