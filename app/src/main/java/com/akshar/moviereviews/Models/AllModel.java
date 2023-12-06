@@ -179,6 +179,8 @@ public class AllModel {
 
             public String title;
 
+            public String name;
+
             @SerializedName("original_language")
             public String originalLanguage;
 
@@ -209,6 +211,10 @@ public class AllModel {
 
             @SerializedName("vote_count")
             public int voteCount;
+
+            public String getName() {
+                return name;
+            }
 
             public boolean isAdult() {
                 return adult;

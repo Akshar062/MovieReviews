@@ -118,11 +118,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 if ("movie".equals(mediaType)) {
                     List<String> personGenres = getGenresAsString(personGenreIds, GenreHelper.getAllMovieGenres());
                     bundle.putString("genre", personGenres != null ? TextUtils.join(", ", personGenres) : "");
+                    bundle.putString("knownForTitle", knownForList.get(0).getTitle());
                 } else if ("tv".equals(mediaType)) {
                     List<String> personGenres = getGenresAsString(personGenreIds, GenreHelper.getAllTvGenres());
                     bundle.putString("genre", personGenres != null ? TextUtils.join(", ", personGenres) : "");
+                    bundle.putString("knownForTitle", knownForList.get(0).getName());
                 }
-                bundle.putString("knownForTitle", knownForList.get(0).getTitle());
                 bundle.putString("knownForPosterPath", knownForList.get(0).getPosterPath());
                 bundle.putString("knownForType", knownForList.get(0).getMediaType());
 
