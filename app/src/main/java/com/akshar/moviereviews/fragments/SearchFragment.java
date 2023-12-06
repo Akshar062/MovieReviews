@@ -22,6 +22,7 @@ import com.akshar.moviereviews.Models.AllModel;
 import com.akshar.moviereviews.R;
 import com.akshar.moviereviews.Utils.Constants;
 import com.akshar.moviereviews.adapters.MovieAdapter;
+import com.akshar.moviereviews.adapters.SearchAdapter;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -36,7 +37,7 @@ public class SearchFragment extends Fragment {
 
     private View view;
     private RecyclerView nowPlayingRecyclerView, airingTodayRecyclerView ,searchRecyclerView;
-    private MovieAdapter nowPlayingAdapter, airingTodayAdapter ,searchAdapter;
+    private SearchAdapter nowPlayingAdapter, airingTodayAdapter ,searchAdapter;
 
     private TextView searchTextView , pageNumberTextView;
     private TextInputEditText searchEditText;
@@ -140,7 +141,7 @@ public class SearchFragment extends Fragment {
                     if (movieModel != null) {
                         List<AllModel.Result> results = movieModel.getResults();
                         if (results != null) {
-                            searchAdapter = new MovieAdapter(getContext(), results);
+                            searchAdapter = new SearchAdapter(getContext(), results);
                             searchRecyclerView.setAdapter(searchAdapter);
                         }
                     }
@@ -167,7 +168,7 @@ public class SearchFragment extends Fragment {
                     if (movieModel != null) {
                         List<AllModel.Result> results = movieModel.getResults();
                         if (results != null) {
-                            searchAdapter = new MovieAdapter(getContext(), results);
+                            searchAdapter = new SearchAdapter(getContext(), results);
                             searchRecyclerView.setAdapter(searchAdapter);
                         }
                     }
@@ -194,7 +195,7 @@ public class SearchFragment extends Fragment {
                     if (movieModel != null) {
                         List<AllModel.Result> results = movieModel.getResults();
                         if (results != null) {
-                            nowPlayingAdapter = new MovieAdapter(getContext(), results);
+                            nowPlayingAdapter = new SearchAdapter(getContext(), results);
                             nowPlayingRecyclerView.setAdapter(nowPlayingAdapter);
                             airingTodayRecyclerView.setAdapter(nowPlayingAdapter);
                         }

@@ -61,4 +61,10 @@ public interface AllMovieApi {
             @Query("page") int page
     );
 
+    @GET("person/popular")
+    Call<AllModel> getPopularPeople(
+            @Query("api_key") String apiKey,
+            @Query("page") int page
+    );
+
 }
