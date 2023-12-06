@@ -2,27 +2,36 @@ package com.akshar.moviereviews.fragments;
 
 import android.os.Bundle;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.akshar.moviereviews.Models.AllModel;
 import com.akshar.moviereviews.R;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.squareup.picasso.Picasso;
 
-public class DetailsFragment extends Fragment {
+import java.util.List;
 
-    private TextView movieTitle, movieOverview, movieReleaseDate, movieRating, movieLanguage, moviePopularity, movieVoteCount ,movieAgeLimit ,movieType,movieGenre;
-    private ImageView moviePoster , backBtn;
+public class DetailsFragment extends BottomSheetDialogFragment {
 
+    private TextView movieTitle, movieOverview, movieReleaseDate, movieRating, movieLanguage, moviePopularity, movieVoteCount ,movieAgeLimit ,movieType,movieGenre,movieKnownForTitle , knownForType;
+    private LinearLayout movieKnownForLayout;
+    private ImageView moviePoster , movieKnownForPoster,closeBtn;
     private View view;
 
+    public static final String TAG = "DetailsFragment";
+
+
     public DetailsFragment() {
-        // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +51,12 @@ public class DetailsFragment extends Fragment {
         movieAgeLimit = view.findViewById(R.id.isAdult);
         movieType = view.findViewById(R.id.tv_type);
         movieGenre = view.findViewById(R.id.tv_genre);
-        backBtn = view.findViewById(R.id.iv_back);
+        closeBtn = view.findViewById(R.id.close_btn);
+
+        movieKnownForLayout = view.findViewById(R.id.ll_movie_known_for);
+        movieKnownForTitle = view.findViewById(R.id.tv_movie_known_for);
+        movieKnownForPoster = view.findViewById(R.id.iv_movie_poster);
+        knownForType = view.findViewById(R.id.tv_movie_known_for_more);
 
         // Getting the data from the bundle
         Bundle bundle = getArguments();
@@ -55,22 +69,40 @@ public class DetailsFragment extends Fragment {
         String genre = bundle.getString("genre");
         String posterPath = bundle.getString("posterPath");
 
+        if (type.equals("person")){
+            movieKnownForLayout.setVisibility(View.VISIBLE);
+            String knownForTitle = bundle.getString("knownForTitle");
+            String knownForPosterPath = bundle.getString("knownForPosterPath");
+            movieKnownForTitle.setText(knownForTitle);
+            Picasso.get().load("https://image.tmdb.org/t/p/w500" + knownForPosterPath).into(movieKnownForPoster);
+            String knownForTypeText = bundle.getString("knownForType");
+            knownForType.setText(knownForTypeText);
+        }
+
         // Setting the data to the views
         movieTitle.setText(title);
         movieOverview.setText(overview);
         movieReleaseDate.setText(releaseDate);
         movieLanguage.setText(language);
-        movieAgeLimit.setText(ageLimit);
+
+        if (ageLimit.equals("false")) {
+            ageLimit = "U/A:13+";
+            movieAgeLimit.setText(ageLimit);
+        } else {
+            ageLimit = "U/A:18+";
+            movieAgeLimit.setText(ageLimit);
+        }
         movieType.setText(type);
         movieGenre.setText(genre);
-
         // Setting the poster image
         Picasso.get().load("https://image.tmdb.org/t/p/w500" + posterPath).into(moviePoster);
 
-        backBtn.setOnClickListener(v -> {
-            getActivity().onBackPressed();
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
         });
-
         return view;
     }
 }

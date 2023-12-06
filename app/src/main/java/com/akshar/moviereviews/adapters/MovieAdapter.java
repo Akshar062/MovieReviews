@@ -2,6 +2,8 @@ package com.akshar.moviereviews.adapters;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,28 +21,22 @@ import com.akshar.moviereviews.MainActivity;
 import com.akshar.moviereviews.Models.AllModel;
 import com.akshar.moviereviews.R;
 import com.akshar.moviereviews.Utils.Constants;
+import com.akshar.moviereviews.Utils.GenreHelper;
 import com.akshar.moviereviews.fragments.DetailsFragment;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
     private Context context;
     private List<AllModel.Result> resultList;
-    private OnItemClickListener onItemClickListener;
 
     public MovieAdapter(Context context, List<AllModel.Result> resultList) {
         this.context = context;
         this.resultList = resultList;
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(AllModel.Result result);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.onItemClickListener = listener;
     }
 
     @NonNull
@@ -53,9 +49,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     public void onBindViewHolder(@NonNull MovieViewHolder holder, int position) {
         AllModel.Result result = resultList.get(position);
 
-        holder.cardView.setOnClickListener(view -> {
-            if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(result);
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDetailsDialog(result);
             }
         });
 
@@ -80,6 +77,81 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 setImage(holder,result.getProfilePath());
                 break;
         }
+    }
+
+    private void showDetailsDialog(AllModel.Result result) {
+        List<AllModel.Result.KnownFor> knownForList = result.getKnownFor();
+        DetailsFragment detailsFragment = new DetailsFragment();
+        // Pass data to the fragment using Bundle
+        Bundle bundle = new Bundle();
+
+        switch (result.getMediaType()) {
+            case "movie":
+                bundle.putString("title", result.getTitle());
+                bundle.putString("releaseDate", result.getReleaseDate());
+                bundle.putString("posterPath", result.getBackdropPath());
+                bundle.putString("overview", result.getOverview());
+                List<Integer> movieGenreIds = result.getGenreIds();
+                List<String> movieGenres = getGenresAsString(movieGenreIds, GenreHelper.getAllMovieGenres());
+                Log.d("TAG", "showDetailsDialog: " + movieGenres);
+                bundle.putString("genre", movieGenres != null ? TextUtils.join(", ", movieGenres) : "");
+                break;
+            case "tv":
+                bundle.putString("title", result.getName());
+                bundle.putString("releaseDate", result.getFirstAirDate());
+                bundle.putString("posterPath", result.getBackdropPath());
+                bundle.putString("overview", result.getOverview());
+                List<Integer> tvGenreIds = result.getGenreIds();
+                List<String> tvGenres = getGenresAsString(tvGenreIds, GenreHelper.getAllTvGenres());
+
+                bundle.putString("genre", tvGenres != null ? TextUtils.join(", ", tvGenres) : "");
+                break;
+            case "person":
+                bundle.putString("title", result.getName());
+                bundle.putString("releaseDate", result.getKnownForDepartment());
+                bundle.putString("posterPath", result.getProfilePath());
+                bundle.putString("overview", knownForList.get(0).getOverview());
+
+                List<Integer> personGenreIds = knownForList.get(0).getGenreIds();
+                String mediaType = knownForList.get(0).getMediaType();
+
+                if ("movie".equals(mediaType)) {
+                    List<String> personGenres = getGenresAsString(personGenreIds, GenreHelper.getAllMovieGenres());
+                    bundle.putString("genre", personGenres != null ? TextUtils.join(", ", personGenres) : "");
+                } else if ("tv".equals(mediaType)) {
+                    List<String> personGenres = getGenresAsString(personGenreIds, GenreHelper.getAllTvGenres());
+                    bundle.putString("genre", personGenres != null ? TextUtils.join(", ", personGenres) : "");
+                }
+                bundle.putString("knownForTitle", knownForList.get(0).getTitle());
+                bundle.putString("knownForPosterPath", knownForList.get(0).getPosterPath());
+                bundle.putString("knownForType", knownForList.get(0).getMediaType());
+
+                break;
+        }
+
+        bundle.putString("language", result.getOriginalLanguage());
+        bundle.putString("ageLimit", String.valueOf(result.isAdult()));
+        bundle.putString("type", result.getMediaType());
+
+        detailsFragment.setArguments(bundle);
+
+        // Show the fragment
+        FragmentTransaction transaction = ((AppCompatActivity) context).getSupportFragmentManager().beginTransaction();
+        detailsFragment.show(transaction, DetailsFragment.TAG);
+    }
+
+    private List<String> getGenresAsString(List<Integer> genreIds, Map<Integer, String> genreMap) {
+        if (genreIds != null && genreMap != null) {
+            List<String> genres = new ArrayList<>();
+            for (Integer genreId : genreIds) {
+                String genreName = genreMap.get(genreId);
+                if (genreName != null) {
+                    genres.add(genreName);
+                }
+            }
+            return genres;
+        }
+        return null;
     }
 
     @Override

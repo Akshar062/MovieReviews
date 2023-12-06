@@ -17,8 +17,6 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private BottomNavigationView bottomNavigationView;
 
-    private MovieAdapter movieAdapter;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(viewPagerAdapter);
-
-        movieAdapter = new MovieAdapter(this, resultList);
-        movieAdapter.setOnItemClickListener(this);
-
-        @Override
-        public void onItemClick(AllModel.Result result) {
-            // Open DetailsFragment and pass the selected result
-            openDetailsFragment(result);
-        }
 
         //Set up the BottomNavigationView here
 
@@ -70,15 +59,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void openDetailsFragment(AllModel.Result result) {
-        // Create a new instance of DetailsFragment and pass the selected result
-        DetailsFragment detailsFragment = DetailsFragment.newInstance(result);
-        // Perform a fragment transaction to replace the current fragment with DetailsFragment
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, detailsFragment);
-        transaction.addToBackStack(null); // Optional: Add to back stack for fragment navigation
-        transaction.commit();
     }
 }
