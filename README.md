@@ -20,7 +20,7 @@ To run this application locally, follow these steps:
 1. Clone the repository:
 
     ```bash
-    [git clone https://github.com/your-username/movie-explorer.git](https://github.com/Akshar062/MovieReviews.git)
+    https://github.com/Akshar062/MovieReviews.git
 
 2. Open in Android Studio:
    
