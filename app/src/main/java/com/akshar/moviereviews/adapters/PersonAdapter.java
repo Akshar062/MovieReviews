@@ -113,13 +113,12 @@ public class PersonAdapter extends RecyclerView.Adapter<PersonAdapter.PersonView
         }
         return null;
     }
-
     @Override
     public int getItemCount() {
         return resultList.size();
     }
 
-    public void updateData(List<PeopleModel.Result> newData) {
+    public void updateData(List<PeopleModel.Person> newData) {
         // Clear the existing data and add new data
         resultList.clear();
         resultList.addAll(newData);
