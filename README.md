@@ -23,22 +23,38 @@ To run this application locally, follow these steps:
     https://github.com/Akshar062/MovieReviews.git
 
 2. Open in Android Studio:
-   
-Open the project in Android Studio and wait for the dependencies to be resolved.
+    Open the project in Android Studio and wait for the dependencies to be resolved.
 
-4. API Key Setup:
-   
-Obtain an API key from TMDB and add it to the Utils/Constants.java file.
+3. API Key Setup:
+    Obtain an API key from TMDB and add it to the Utils/Constants.java file.
 
-5. Picasso Library:
-   
-The app uses Picasso for image loading. Make sure to include the following dependency in your build.gradle file.
+4. Picasso Library:
+    The app uses Picasso for image loading. Make sure to include the following dependency in your build.gradle file.
 
+    ```gradle
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-6. Run the App:
+5. Run the App:
+    Build and run the app on an emulator or a physical device.
 
-Build and run the app on an emulator or a physical device.
+
+## Built With
+    
+- Android Studio
+- Java
+- XML
+- TMDB API
+- Picasso Library
+- Retrofit Library
+- Gson Library
+- Glide Library
+- Material Design Components
+- RecyclerView
+- CardView
+- ConstraintLayout
+- ViewPager2
+- TabLayout
+- Navigation Component
 
 ## Contributing
 If you'd like to contribute to the project, please follow the contribution guidelines.
